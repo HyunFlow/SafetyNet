@@ -1,4 +1,4 @@
-package com.openclassrooms.safetynet.Model;
+package com.openclassrooms.safetynet.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,5 +15,5 @@ public class Person {
     private String zip;
     private String phone;
     private String email;
-
+    private int age;
 }

@@ -1,4 +1,4 @@
-package com.openclassrooms.safetynet.Model;
+package com.openclassrooms.safetynet.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

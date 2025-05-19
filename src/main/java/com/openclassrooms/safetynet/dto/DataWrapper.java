@@ -1,9 +1,9 @@
-package com.openclassrooms.safetynet.Data;
+package com.openclassrooms.safetynet.dto;
 
 import com.google.gson.annotations.SerializedName;
-import com.openclassrooms.safetynet.Model.Firestation;
-import com.openclassrooms.safetynet.Model.MedicalRecord;
-import com.openclassrooms.safetynet.Model.Person;
+import com.openclassrooms.safetynet.model.Firestation;
+import com.openclassrooms.safetynet.model.MedicalRecord;
+import com.openclassrooms.safetynet.model.Person;
 import java.util.List;
 import lombok.Data;
 
