@@ -1,8 +1,8 @@
 package com.openclassrooms.safetynet.config;
 
 import com.openclassrooms.safetynet.repository.DataRepository;
-import com.openclassrooms.safetynet.service.ChildAlertService;
 import com.openclassrooms.safetynet.service.PersonService;
+import com.openclassrooms.safetynet.service.PhoneAlertService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 public class DataInitializer implements ApplicationRunner {
   private final DataRepository dataRepository;
   private final PersonService personService;
-  private final ChildAlertService childAlertService;
+  private final PhoneAlertService phoneAlertService;
 
   @Override
   public void run(ApplicationArguments args) throws Exception {
