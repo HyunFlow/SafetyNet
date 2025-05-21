@@ -10,12 +10,14 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.List;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @Slf4j
 @Getter
+@Setter
 public class DataRepository {
 
   private final String filePath = "src/main/resources/Data.json";
@@ -35,16 +37,6 @@ public class DataRepository {
       this.firestations = data.getFirestations();
       this.medicalRecords = data.getMedicalRecords();
       log.info("Data loaded successfully");
-
-      for (Person person : persons) {
-        System.out.println(person);
-      }
-      for (Firestation firestation : firestations) {
-        System.out.println(firestation);
-      }
-      for (MedicalRecord medicalRecord : medicalRecords) {
-        System.out.println(medicalRecord);
-      }
 
     } catch (IOException e) {
       e.printStackTrace();
@@ -68,7 +60,7 @@ public class DataRepository {
     firestations.removeIf(f -> f.getAddress().equalsIgnoreCase(address));
   }
 
-  public void deleteFirestationByStationNumber(int stationNumber) {
+  public void deleteFirestationByStation(int stationNumber) {
     firestations.removeIf(f -> f.getStation() == stationNumber);
   }
 

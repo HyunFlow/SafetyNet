@@ -89,7 +89,7 @@ public class FirestationService {
     List<Firestation> firestations = dataRepository.getFirestations();
     if (firestations.stream()
         .anyMatch(f -> f.getStation() == stationNumber)) {
-      dataRepository.deleteFirestationByStationNumber(stationNumber);
+      dataRepository.deleteFirestationByStation(stationNumber);
       return true;
     } else {
       return false;

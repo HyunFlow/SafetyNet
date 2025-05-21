@@ -24,8 +24,9 @@ public class FirestationServiceTest {
   @InjectMocks
   private FirestationService firestationService;
 
+  /** Teste pour avoir une liste de personne par un numéro de caserne */
   @Test
-  void testGetPeopleByStation_shouldReturnCorrectCountsAndListOfPeople() {
+  void getPeopleByStation_shouldReturnCorrectCountsAndListOfPeople() {
     // given
     int stationNumber = 3;
 
@@ -124,7 +125,7 @@ public class FirestationServiceTest {
     boolean result = firestationService.deleteFirestationByStation(2);
 
     // then
-    Mockito.verify(dataRepository, Mockito.never()).deleteFirestationByStationNumber(Mockito.anyInt());
+    Mockito.verify(dataRepository, Mockito.never()).deleteFirestationByStation(Mockito.anyInt());
     assertThat(result).isFalse();
   }
 
