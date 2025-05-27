@@ -14,14 +14,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Slf4j
 public class AlertController {
+
   private final ChildAlertService childAlertService;
   private final PhoneAlertService phoneAlertService;
 
+  /**
+   * Recherche les enfants vivant à une adresse donnée ainsi que les membres de leur foyer.
+   */
   @GetMapping("/childAlert")
   public ChildAlertResponseDTO getListOfChildrenAndFamilyByAddress(@RequestParam String address) {
     return childAlertService.findChildrenAndFamilyByAddress(address);
   }
 
+  /**
+   * Recherche les numéros de téléphone des personnes couvertes par une caserne donnée.
+   */
   @GetMapping("/phoneAlert")
   public PhoneAlertResponseDTO getListOfPhoneNumberByAddress(@RequestParam int stationNumber) {
     return phoneAlertService.findPhoneNumberOfPeopleByFirestation(stationNumber);

@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 public class PersonService {
 
   /**
-   * Calcul l'age à partir de la date de naissance.
+   * Calcule l'âge à partir de la date de naissance au format MM/dd/yyyy.
    */
   public int calculateAge(String birthdate) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
@@ -25,7 +25,7 @@ public class PersonService {
   }
 
   /**
-   * Assigne l'age á chaque objet Person à partir des données médicales
+   * Assigne l'âge à chaque objet Person en se basant sur les données des dossiers médicaux.
    */
   public void assignAgesToPersons(List<Person> persons, List<MedicalRecord> medicalRecords) {
     Map<String, MedicalRecord> medicalRecordsMap = new HashMap<>();

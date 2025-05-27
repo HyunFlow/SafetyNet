@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 public class PhoneAlertService {
   private final FirestationService firestationService;
 
+  /**
+   * Recherche les numéros de téléphone des personnes couvertes par une caserne donnée.
+   */
   public PhoneAlertResponseDTO findPhoneNumberOfPeopleByFirestation(int stationNumber) {
     List<Person> persons = firestationService.getPeopleByStation(stationNumber).getPersons();
     List<String> phoneNumber = persons.stream()

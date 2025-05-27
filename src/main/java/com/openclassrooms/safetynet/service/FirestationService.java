@@ -17,7 +17,10 @@ public class FirestationService {
   private final DataRepository dataRepository;
 
   /**
-   * Recherche la liste de personnes couvertes par un numéro de caserne donné
+   * Recherche la liste des personnes couvertes par une caserne donnée.
+   *
+   * @param stationNumber numéro de la caserne
+   * @return une réponse contenant les personnes couvertes et un décompte des adultes et des enfants
    */
   public FirestationResponseDTO getPeopleByStation(int stationNumber) {
     List<Person> persons = dataRepository.getPersons();
@@ -39,7 +42,11 @@ public class FirestationService {
   }
 
   /**
-   * Ajoute un objet Firestqtion avec une nouvelle adresse et un numéro de caserne.
+   * Ajoute une nouvelle caserne avec une adresse et un numéro de station.
+   *
+   * @param address adresse de la caserne
+   * @param stationNumber numéro de la station
+   * @return true si l'ajout a réussi, false si une caserne existe déjà à cette adresse
    */
   public boolean addFirestation(String address, int stationNumber) {
     List<Firestation> firestations = dataRepository.getFirestations();
@@ -55,7 +62,11 @@ public class FirestationService {
   }
 
   /**
-   * Mis à jour un numéro de caserne par une adresse.
+   * Met à jour le numéro de station d’une caserne existante à une adresse donnée.
+   *
+   * @param address adresse de la caserne
+   * @param stationNumber nouveau numéro de station
+   * @return true si la mise à jour a réussi, false si l'adresse n'existe pas
    */
   public boolean setFirestation(String address, int stationNumber) {
     List<Firestation> firestations = dataRepository.getFirestations();
@@ -69,7 +80,10 @@ public class FirestationService {
   }
 
   /**
-   * Supprime une caserne sur la liste par une adresse associée.
+   * Supprime une caserne en fonction de son adresse.
+   *
+   * @param address adresse de la caserne
+   * @return true si la suppression a réussi, false si l'adresse n'existe pas
    */
   public boolean deleteFirestationByAddress(String address) {
     List<Firestation> firestations = dataRepository.getFirestations();
@@ -83,7 +97,10 @@ public class FirestationService {
   }
 
   /**
-   * Supprime une caserne sur la liste par un numéro de la station associée.
+   * Supprime toutes les casernes associées à un numéro de station donné.
+   *
+   * @param stationNumber numéro de la station
+   * @return true si la suppression a réussi, false si aucun enregistrement n'est trouvé
    */
   public boolean deleteFirestationByStation(int stationNumber) {
     List<Firestation> firestations = dataRepository.getFirestations();
@@ -97,7 +114,24 @@ public class FirestationService {
   }
 
   /**
-   * Lire une liste des casernes enregistrées.
+   * Recherche et retourne le numéro de station associé à une adresse donnée.
+   *
+   * @param address adresse recherchée
+   * @return numéro de station, ou null si aucun résultat
+   */
+  public int getStationNumberByAddress(String address) {
+    int stationNumber = dataRepository.getAllFirestations().stream()
+        .filter(f -> f.getAddress().equalsIgnoreCase(address))
+        .map(Firestation::getStation)
+        .findFirst()
+        .orElse(-1);
+    return stationNumber;
+  }
+
+  /**
+   * Retourne la liste de toutes les casernes enregistrées.
+   *
+   * @return liste des casernes
    */
   public List<Firestation> getAllFirestations() {
     return dataRepository.getAllFirestations();

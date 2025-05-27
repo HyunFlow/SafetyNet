@@ -14,7 +14,8 @@ import org.springframework.stereotype.Service;
 public class ChildAlertService {
 
   /**
-   * 매개변수로 입력되는 주소로 미성년자 리스트 반환
+   * Retourne la liste des enfants (âgés de 18 ans ou moins) vivant à l'adresse donnée,
+   * ainsi que la liste des membres adultes de leurs familles résidant à la même adresse.
    */
   private final DataRepository dataRepository;
 
