@@ -13,7 +13,7 @@ public class PhoneAlertService {
   private final FirestationService firestationService;
 
   /**
-   * Recherche les numéros de téléphone des personnes couvertes par une caserne donnée.
+   * Récupère les numéros de téléphone des personnes couvertes par une caserne spécifique.
    */
   public PhoneAlertResponseDTO findPhoneNumberOfPeopleByFirestation(int stationNumber) {
     List<Person> persons = firestationService.getPeopleByStation(stationNumber).getPersons();

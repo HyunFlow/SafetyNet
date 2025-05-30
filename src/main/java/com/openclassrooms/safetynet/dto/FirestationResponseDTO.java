@@ -8,7 +8,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class FirestationResponseDTO {
-
   private List<Person> persons;
   private long adultCount;
   private long childCount;

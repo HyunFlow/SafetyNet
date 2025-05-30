@@ -16,7 +16,7 @@ public class PersonInfoService {
   private final MedicalRecordService medicalRecordService;
 
   /**
-   * Recherche les informations personnelles des personnes correspondant à un nom de famille donné.
+   * Retourne les informations personnelles des personnes dont le nom de famille correspond au paramètre donné.
    */
   public List<PersonInfoResponseDTO> findPersonsInfoByLastName(String lastName) {
     List<Person> persons = dataRepository.getPersons();

@@ -24,14 +24,14 @@ public class FireService {
     int stationNumber = firestationService.getStationNumberByAddress(address);
 
     List<ResidentDTO> residents = dataRepository.getPersons().stream()
-        .filter(r -> r.getAddress().equalsIgnoreCase(address))
-        .map(r -> new ResidentDTO(
-                r.getFirstName(),
-                r.getLastName(),
-                r.getPhone(),
-                r.getAge(),
-                medicalRecordService.findMedicationsByName(r.getFirstName(), r.getLastName()),
-                medicalRecordService.findAllergiesByName(r.getFirstName(), r.getLastName())
+        .filter(p -> p.getAddress().equalsIgnoreCase(address))
+        .map(p -> new ResidentDTO(
+                p.getFirstName(),
+                p.getLastName(),
+                p.getPhone(),
+                p.getAge(),
+                medicalRecordService.findMedicationsByName(p.getFirstName(), p.getLastName()),
+                medicalRecordService.findAllergiesByName(p.getFirstName(), p.getLastName())
             )
         ).collect(Collectors.toList());
 

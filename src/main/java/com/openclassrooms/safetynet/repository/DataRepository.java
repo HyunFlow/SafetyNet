@@ -67,4 +67,46 @@ public class DataRepository {
   public List<Firestation> getAllFirestations() {
     return this.firestations;
   }
+
+  public boolean addPerson(Person newPerson) {
+    return this.persons.add(newPerson);
+  }
+
+  public boolean setPerson(Person updatedPerson) {
+    for (int i = 0; i < persons.size(); i++) {
+      Person existingPerson = this.persons.get(i);
+      if (existingPerson.getFirstName().equalsIgnoreCase(updatedPerson.getFirstName())
+          && existingPerson.getLastName().equalsIgnoreCase(updatedPerson.getLastName())) {
+        this.persons.set(i, updatedPerson);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean deletePerson(Person existPerson) {
+    return this.persons.removeIf(p -> p.getFirstName().equalsIgnoreCase(existPerson.getFirstName())
+        && p.getLastName().equalsIgnoreCase(existPerson.getLastName()));
+  }
+
+  public boolean addMedicalRecord(MedicalRecord newMedicalRecord) {
+    return this.medicalRecords.add(newMedicalRecord);
+  }
+
+  public boolean setMedicalRecord(MedicalRecord updatedRecord) {
+    for (int i = 0; i < this.medicalRecords.size(); i++) {
+      MedicalRecord existingMedicalRecord = this.medicalRecords.get(i);
+      if (existingMedicalRecord.getFirstName().equalsIgnoreCase(updatedRecord.getFirstName()) &&
+          existingMedicalRecord.getLastName().equalsIgnoreCase(updatedRecord.getLastName())) {
+        this.medicalRecords.set(i, updatedRecord);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean deleteMedicalRecord(MedicalRecord existMedicalRecord) {
+    return this.medicalRecords.removeIf(mr -> mr.getFirstName().equalsIgnoreCase(existMedicalRecord.getFirstName())
+        && mr.getLastName().equalsIgnoreCase(existMedicalRecord.getLastName()));
+  }
 }
