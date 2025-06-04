@@ -97,7 +97,21 @@ public class FirestationServiceTest {
     boolean result = firestationService.setFirestation("1509 Culver St", 2);
 
     // then
-    Mockito.verify(dataRepository).updateFirestation(new Firestation("1509 Culver St", 2));
+    Mockito.verify(dataRepository).setFirestation(new Firestation("1509 Culver St", 2));
+    assertThat(result).isTrue();
+  }
+
+  @Test
+  void deleteFirestationByAddress_shouldReturnTrue_whenAddressExist() {
+    // given
+    List<Firestation> existingFirestations = List.of(new Firestation("644 Gershwin Cir", 1));
+    Mockito.when(dataRepository.getFirestations()).thenReturn(existingFirestations);
+
+    // when
+    boolean result = firestationService.deleteFirestationByAddress("644 Gershwin Cir");
+
+    // then
+    Mockito.verify(dataRepository, Mockito.times(1)).deleteFirestationByAddress(Mockito.anyString());
     assertThat(result).isTrue();
   }
 
@@ -116,6 +130,20 @@ public class FirestationServiceTest {
   }
 
   @Test
+  void deleteFirestationByStation_shouldReturnTrue_whenAddressExist() {
+    // given
+    List<Firestation> existingFirestations = List.of(new Firestation("644 Gershwin Cir", 1));
+    Mockito.when(dataRepository.getFirestations()).thenReturn(existingFirestations);
+
+    // when
+    boolean result = firestationService.deleteFirestationByStation(1);
+
+    // then
+    Mockito.verify(dataRepository, Mockito.times(1)).deleteFirestationByStation(Mockito.anyInt());
+    assertThat(result).isTrue();
+  }
+
+  @Test
   void deleteFirestationByStation_shouldReturnFalse_whenAddressDoesNotExist() {
     // given
     List<Firestation> existingFirestations = List.of();
@@ -127,6 +155,24 @@ public class FirestationServiceTest {
     // then
     Mockito.verify(dataRepository, Mockito.never()).deleteFirestationByStation(Mockito.anyInt());
     assertThat(result).isFalse();
+  }
+
+  @Test
+  public void getStationNumberByAddress_shouldReturnCorrectNumber_whenAddressExists() {
+    // given
+    String address = "1509 Culver St";
+    List<Firestation> firestations = List.of(
+        new Firestation("1509 Culver St", 3),
+        new Firestation("29 15th St", 2)
+    );
+
+    Mockito.when(dataRepository.getAllFirestations()).thenReturn(firestations);
+
+    // when
+    int stationNumber = firestationService.getStationNumberByAddress(address);
+
+    // then
+    assertThat(stationNumber).isEqualTo(3);
   }
 
   @Test

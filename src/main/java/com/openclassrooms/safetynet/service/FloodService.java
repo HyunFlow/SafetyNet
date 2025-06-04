@@ -11,6 +11,11 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service pour la gestion des alertes d'inondation.
+ * Fournit des fonctionnalités pour identifier les foyers desservis par les casernes
+ * et récupérer les informations des résidents en cas d'inondation.
+ */
 @Service
 @RequiredArgsConstructor
 public class FloodService {
@@ -20,10 +25,18 @@ public class FloodService {
 
   /**
    * Recherche les foyers desservis par les casernes spécifiées.
+   * Pour chaque numéro de caserne fourni, récupère toutes les adresses associées
+   * et retourne une liste des foyers à ces adresses.
    *
-   * Pour chaque numéro de caserne fourni, cette méthode récupère toutes les adresses associées et
-   * retourne une liste des foyers à ces adresses. Pour chaque résident, les informations suivantes
-   * sont incluses : prénom, nom, numéro de téléphone, âge, médicaments et allergies.
+   * Pour chaque résident, les informations suivantes sont incluses :
+   * - Prénom et nom
+   * - Numéro de téléphone
+   * - Âge
+   * - Médicaments
+   * - Allergies
+   *
+   * @param stationNumbers la liste des numéros de caserne à rechercher
+   * @return List<FloodResponseDTO> contenant les informations des foyers par caserne
    */
   public List<FloodResponseDTO> findHouseholdsByStationNumbers(List<Integer> stationNumbers) {
 

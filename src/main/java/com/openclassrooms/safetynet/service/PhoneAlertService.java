@@ -7,6 +7,9 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service pour la gestion des numéros de téléphone des personnes couvertes par une caserne spécifique.
+ */
 @Service
 @RequiredArgsConstructor
 public class PhoneAlertService {
@@ -14,6 +17,9 @@ public class PhoneAlertService {
 
   /**
    * Récupère les numéros de téléphone des personnes couvertes par une caserne spécifique.
+   *
+   * @param stationNumber le numéro de la caserne
+   * @return PhoneAlertResponseDTO contenant la liste des numéros de téléphone
    */
   public PhoneAlertResponseDTO findPhoneNumberOfPeopleByFirestation(int stationNumber) {
     List<Person> persons = firestationService.getPeopleByStation(stationNumber).getPersons();

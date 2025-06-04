@@ -9,6 +9,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service responsable de la gestion des dossiers médicaux.
+ * Fournit des opérations CRUD ainsi que des fonctionnalités associées aux
+ * médicaments et allergies des patients. Respecte le principe de responsabilité unique.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -17,7 +22,12 @@ public class MedicalRecordService {
   private final DataRepository dataRepository;
 
   /**
-   * Recherche les dossiers médicaux correspondant à un prénom et un nom de famille.
+   * Recherche tous les dossiers médicaux correspondant au prénom et au nom spécifiés.
+   * La comparaison des noms est insensible à la casse.
+   *
+   * @param firstName Le prénom de la personne recherchée
+   * @param lastName  Le nom de famille de la personne recherchée
+   * @return Une liste de dossiers médicaux correspondants, ou une liste vide si aucun trouvé
    */
   public List<MedicalRecordResponseDTO> findMedicalRecordsByName(String firstName,
       String lastName) {
@@ -35,7 +45,12 @@ public class MedicalRecordService {
   }
 
   /**
-   * Recherche les médicaments correspondant à un prénom et un nom de famille.
+   * Recherche les médicaments d'une personne en fonction de son prénom et de son nom.
+   * La recherche est insensible à la casse.
+   *
+   * @param firstName Le prénom de la personne
+   * @param lastName  Le nom de famille de la personne
+   * @return Une liste de médicaments prescrits
    */
   public List<String> findMedicationsByName(String firstName, String lastName) {
     return dataRepository.getMedicalRecords().stream()
@@ -46,7 +61,12 @@ public class MedicalRecordService {
   }
 
   /**
-   * Recherche les allergies correspondant à un prénom et un nom de famille.
+   * Recherche les allergies connues d'une personne à partir de son prénom et de son nom.
+   * La recherche est insensible à la casse.
+   *
+   * @param firstName Le prénom de la personne
+   * @param lastName  Le nom de famille de la personne
+   * @return Une liste d’allergies connues
    */
   public List<String> findAllergiesByName(String firstName, String lastName) {
     return dataRepository.getMedicalRecords().stream()
@@ -56,38 +76,58 @@ public class MedicalRecordService {
         .collect(Collectors.toList());
   }
 
-  public boolean createNewMedicalRecord(MedicalRecordResponseDTO newRecordDTO) {
-    boolean existingRecord = existMedicalRecord(newRecordDTO);
+  /**
+   * Récupère tous les dossiers médicaux enregistrés.
+   *
+   * @return Une liste de tous les dossiers médicaux disponibles
+   */
+  public List<MedicalRecordResponseDTO> findAllMedicalRecords() {
+    return dataRepository.getMedicalRecords().stream()
+        .map(mr -> new MedicalRecordResponseDTO(
+            mr.getFirstName(),
+            mr.getLastName(),
+            mr.getBirthdate(),
+            mr.getMedications(),
+            mr.getAllergies()
+        ))
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * Crée un nouveau dossier médical si aucun dossier existant ne correspond au prénom et nom donnés
+   * (comparaison insensible à la casse).
+   *
+   * @param medicalRecordDTO Les données du nouveau dossier médical
+   * @return {@code true} si la création a réussi, {@code false} si un dossier existe déjà
+   */
+  public boolean createNewMedicalRecord(MedicalRecordResponseDTO medicalRecordDTO) {
+    boolean existingRecord = existMedicalRecord(medicalRecordDTO);
 
     if(!existingRecord) {
       MedicalRecord newRecord = new MedicalRecord(
-          newRecordDTO.getFirstName(),
-          newRecordDTO.getLastName(),
-          newRecordDTO.getBirthdate(),
-          newRecordDTO.getMedications(),
-          newRecordDTO.getAllergies()
+          medicalRecordDTO.getFirstName(),
+          medicalRecordDTO.getLastName(),
+          medicalRecordDTO.getBirthdate(),
+          medicalRecordDTO.getMedications(),
+          medicalRecordDTO.getAllergies()
       );
           return dataRepository.addMedicalRecord(newRecord);
     }
     return false;
   }
 
-  public List<MedicalRecordResponseDTO> findAllMedicalRecords() {
-    return dataRepository.getMedicalRecords().stream()
-        .map(r -> new MedicalRecordResponseDTO(
-            r.getFirstName(),
-            r.getLastName(),
-            r.getBirthdate(),
-            r.getMedications(),
-            r.getAllergies()
-        )).collect(Collectors.toList());
-  }
-
-  public boolean updatedMedicalRecord(MedicalRecordResponseDTO recordDto) {
-    boolean existingRecord = existMedicalRecord(recordDto);
+  /**
+   * Met à jour un dossier médical existant selon le prénom et le nom.
+   * Aucune mise à jour n’est effectuée si aucun dossier correspondant n’est trouvé.
+   *
+   * @param medicalRecordDTO Les nouvelles données à appliquer
+   * @return {@code true} si la mise à jour a été effectuée, {@code false} sinon
+   */
+  public boolean updateMedicalRecord(MedicalRecordResponseDTO medicalRecordDTO) {
+    boolean existingRecord = existMedicalRecord(medicalRecordDTO);
 
     if(existingRecord) {
-      MedicalRecord newRecord = mapDtoToMedicalRecord(recordDto);
+      MedicalRecord newRecord = mapDtoToMedicalRecord(medicalRecordDTO);
       return dataRepository.setMedicalRecord(newRecord);
     } else {
       log.error("Medical record not found");
@@ -95,11 +135,18 @@ public class MedicalRecordService {
     }
   }
 
-  public boolean deleteMedicalRecord(MedicalRecordResponseDTO recordDto) {
-    boolean existingRecord = existMedicalRecord(recordDto);
+  /**
+   * Supprime un dossier médical existant.
+   * La suppression ne s’effectue que si le dossier est trouvé.
+   *
+   * @param medicalRecordDTO Les informations du dossier médical à supprimer
+   * @return {@code true} si la suppression est réussie, {@code false} si le dossier n’existe pas
+   */
+  public boolean deleteMedicalRecord(MedicalRecordResponseDTO medicalRecordDTO) {
+    boolean existingRecord = existMedicalRecord(medicalRecordDTO);
 
     if(existingRecord) {
-      MedicalRecord medicalRecord = mapDtoToMedicalRecord(recordDto);
+      MedicalRecord medicalRecord = mapDtoToMedicalRecord(medicalRecordDTO);
       return dataRepository.deleteMedicalRecord(medicalRecord);
     } else {
       log.error("Medical record not found");
@@ -107,12 +154,24 @@ public class MedicalRecordService {
     }
   }
 
-  private boolean existMedicalRecord(MedicalRecordResponseDTO recordDto) {
+  /**
+   * Vérifie si un dossier médical existe déjà pour un prénom et un nom donnés (insensible à la casse).
+   *
+   * @param medicalRecordDTO Le dossier médical à vérifier
+   * @return {@code true} si un dossier correspondant existe, {@code false} sinon
+   */
+  private boolean existMedicalRecord(MedicalRecordResponseDTO medicalRecordDTO) {
     return dataRepository.getMedicalRecords().stream()
-        .anyMatch(mr -> mr.getFirstName().equalsIgnoreCase(recordDto.getFirstName()) &&
-            mr.getLastName().equalsIgnoreCase(recordDto.getLastName()));
+        .anyMatch(mr -> mr.getFirstName().equalsIgnoreCase(medicalRecordDTO.getFirstName()) &&
+            mr.getLastName().equalsIgnoreCase(medicalRecordDTO.getLastName()));
   }
 
+  /**
+   * Convertit un DTO de type {@link MedicalRecordResponseDTO} en entité {@link MedicalRecord}.
+   *
+   * @param dto Le DTO à convertir
+   * @return L’entité {@link MedicalRecord} correspondante
+   */
   private MedicalRecord mapDtoToMedicalRecord(MedicalRecordResponseDTO dto) {
     MedicalRecord medicalRecord = new MedicalRecord();
         medicalRecord.setFirstName(dto.getFirstName());
@@ -122,4 +181,5 @@ public class MedicalRecordService {
         medicalRecord.setAllergies(dto.getAllergies());
         return medicalRecord;
   }
+
 }

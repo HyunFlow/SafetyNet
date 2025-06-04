@@ -4,6 +4,9 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+/**
+ * DTO pour la réponse de l'endpoint /personInfo.
+ */
 @Data
 @AllArgsConstructor
 public class PersonInfoResponseDTO {

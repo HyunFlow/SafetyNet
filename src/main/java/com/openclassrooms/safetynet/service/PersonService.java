@@ -15,15 +15,23 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service pour la gestion des personnes.
+ * Gère les opérations CRUD sur les personnes et fournit des fonctionnalités
+ * pour le calcul de l'âge et la gestion des informations personnelles.
+ */
 @Service
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public class PersonService {
 
   private final DataRepository dataRepository;
 
   /**
    * Calcule l'âge à partir d'une date de naissance au format MM/dd/yyyy.
+   *
+   * @param birthdate la date de naissance au format MM/dd/yyyy
+   * @return l'âge calculé en années
    */
   public int calculateAge(String birthdate) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
@@ -33,6 +41,10 @@ public class PersonService {
 
   /**
    * Assigne l'âge à chaque personne de la liste en utilisant les dossiers médicaux correspondants.
+   * Utilise une map pour optimiser la recherche des dossiers médicaux.
+   *
+   * @param persons la liste des personnes à mettre à jour
+   * @param medicalRecords la liste des dossiers médicaux
    */
   public void assignAgesToPersons(List<Person> persons, List<MedicalRecord> medicalRecords) {
     Map<String, MedicalRecord> medicalRecordsMap = new HashMap<>();
@@ -54,6 +66,10 @@ public class PersonService {
 
   /**
    * Sauvegarde une nouvelle personne si elle n'existe pas déjà.
+   * Vérifie l'existence de la personne avant l'ajout pour éviter les doublons.
+   *
+   * @param dto les informations de la personne à sauvegarder
+   * @return true si la sauvegarde est réussie, false si la personne existe déjà
    */
   public boolean saveNewPerson(PersonDTO dto) {
     if (!personExists(dto)) {
@@ -67,6 +83,10 @@ public class PersonService {
 
   /**
    * Met à jour une personne existante.
+   * Vérifie l'existence de la personne avant la mise à jour.
+   *
+   * @param dto les nouvelles informations de la personne
+   * @return true si la mise à jour est réussie, false si la personne n'existe pas
    */
   public boolean updatePerson(PersonDTO dto) {
     if(personExists(dto)) {
@@ -80,6 +100,10 @@ public class PersonService {
 
   /**
    * Supprime une personne existante.
+   * Vérifie l'existence de la personne avant la suppression.
+   *
+   * @param dto les informations de la personne à supprimer
+   * @return true si la suppression est réussie, false si la personne n'existe pas
    */
   public boolean deletePerson(PersonDTO dto) {
     if(personExists(dto)) {
@@ -93,6 +117,9 @@ public class PersonService {
 
   /**
    * Récupère la liste complète des personnes sous forme de DTO.
+   * Convertit chaque entité Person en PersonDTO.
+   *
+   * @return List<PersonDTO> contenant toutes les personnes
    */
   public List<PersonDTO> findAllPersons() {
     return dataRepository.getPersons().stream()
@@ -110,6 +137,10 @@ public class PersonService {
 
   /**
    * Vérifie si une personne existe dans la base selon son prénom et nom.
+   * La comparaison est insensible à la casse.
+   *
+   * @param dto les informations de la personne à vérifier
+   * @return true si la personne existe, false sinon
    */
   private boolean personExists(PersonDTO dto) {
     return dataRepository.getPersons().stream()
@@ -119,6 +150,10 @@ public class PersonService {
 
   /**
    * Convertit un PersonDTO en entité Person.
+   * Copie toutes les propriétés du DTO vers une nouvelle entité.
+   *
+   * @param dto le DTO à convertir
+   * @return une nouvelle instance de Person avec les propriétés du DTO
    */
   private Person mapDtoToPerson(PersonDTO dto) {
     Person person = new Person();
@@ -132,6 +167,4 @@ public class PersonService {
     person.setAge(dto.getAge());
     return person;
   }
-
-
 }

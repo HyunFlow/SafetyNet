@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Contrôleur REST pour la gestion des dossiers médicaux.
+ * Fournit des endpoints pour les opérations CRUD sur les dossiers médicaux des personnes.
+ */
 @RestController
 @RequiredArgsConstructor
 public class MedicalRecordController {
@@ -22,7 +26,9 @@ public class MedicalRecordController {
   private final MedicalRecordService medicalRecordService;
 
   /**
-   * Récupère la liste de tous les dossiers médicaux enregistrés.
+   * Récupère tous les dossiers médicaux enregistrés.
+   *
+   * @return List<MedicalRecordResponseDTO> contenant tous les dossiers médicaux
    */
   @GetMapping("/medicalRecords")
   public List<MedicalRecordResponseDTO> getAllMedicalRecords() {
@@ -30,20 +36,13 @@ public class MedicalRecordController {
   }
 
   /**
-   * Récupère un ou plusieurs dossiers médicaux correspondant au prénom et nom fournis.
-   */
-  @GetMapping("/medicalRecord")
-  public List<MedicalRecordResponseDTO> getMedicalRecordByName(@RequestParam String firstName,
-      @RequestParam String lastName) {
-    return medicalRecordService.findMedicalRecordsByName(firstName, lastName);
-  }
-
-  /**
-   * Crée un nouveau dossier médical à partir des données fournies dans le corps de la requête. Le
-   * prénom et le nom sont obligatoires.
+   * Crée un nouveau dossier médical à partir des données fournies.
+   *
+   * @param medicalRecordResponseDTO les informations du dossier médical à créer
+   * @return ResponseEntity avec le statut HTTP approprié (201 si créé, 409 si existe déjà)
    */
   @PostMapping("/medicalRecord")
-  public ResponseEntity<String> postNewMedicalRecordByName(
+  public ResponseEntity<String> createMedicalRecord(
       @RequestBody @Valid MedicalRecordResponseDTO medicalRecordResponseDTO) {
     boolean created = medicalRecordService.createNewMedicalRecord(medicalRecordResponseDTO);
 
@@ -55,13 +54,15 @@ public class MedicalRecordController {
   }
 
   /**
-   * Met à jour un dossier médical existant avec les données fournies. Le prénom et le nom sont
-   * obligatoires pour identifier le dossier à modifier.
+   * Met à jour un dossier médical existant.
+   *
+   * @param medicalRecordResponseDTO les nouvelles informations du dossier médical
+   * @return ResponseEntity avec le statut HTTP approprié (200 si mis à jour, 409 si échec)
    */
   @PutMapping("/medicalRecord")
-  public ResponseEntity<String> putMedicalRecord(
+  public ResponseEntity<String> updateMedicalRecord(
       @RequestBody @Valid MedicalRecordResponseDTO medicalRecordResponseDTO) {
-    boolean updated = medicalRecordService.updatedMedicalRecord(medicalRecordResponseDTO);
+    boolean updated = medicalRecordService.updateMedicalRecord(medicalRecordResponseDTO);
 
     if (updated) {
       return new ResponseEntity<>("Medical record updated", HttpStatus.OK);
@@ -71,8 +72,10 @@ public class MedicalRecordController {
   }
 
   /**
-   * Supprime un dossier médical correspondant aux informations fournies. Le prénom et le nom sont
-   * obligatoires pour identifier le dossier à supprimer.
+   * Supprime un dossier médical.
+   *
+   * @param medicalRecordResponseDTO les informations du dossier médical à supprimer
+   * @return ResponseEntity avec le statut HTTP approprié (200 si supprimé, 409 si échec)
    */
   @DeleteMapping("/medicalRecord")
   public ResponseEntity<String> deleteMedicalRecord(
@@ -84,5 +87,19 @@ public class MedicalRecordController {
     } else {
       return new ResponseEntity<>("Delete a Medical record failed", HttpStatus.CONFLICT);
     }
+  }
+
+  /**
+   * Récupère les dossiers médicaux correspondant au prénom et nom donnés.
+   *
+   * @param firstName le prénom de la personne
+   * @param lastName le nom de famille de la personne
+   * @return List<MedicalRecordResponseDTO> contenant les dossiers médicaux trouvés
+   */
+  @GetMapping("/medicalRecord")
+  public List<MedicalRecordResponseDTO> getMedicalRecordByName(
+      @RequestParam String firstName,
+      @RequestParam String lastName) {
+    return medicalRecordService.findMedicalRecordsByName(firstName, lastName);
   }
 }

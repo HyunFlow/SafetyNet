@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Contrôleur REST pour la gestion des personnes.
+ * Fournit des endpoints pour les opérations CRUD sur les personnes et la récupération d'informations personnelles.
+ */
 @RestController
 @RequiredArgsConstructor
 public class PersonController {
@@ -26,6 +30,9 @@ public class PersonController {
 
   /**
    * Recherche les informations personnelles des personnes portant un nom de famille donné.
+   *
+   * @param lastName le nom de famille à rechercher
+   * @return List<PersonInfoResponseDTO> contenant les informations des personnes trouvées
    */
   @GetMapping("/personInfolastName")
   public List<PersonInfoResponseDTO> getPersonInfoByLastName(@RequestParam String lastName) {
@@ -34,6 +41,8 @@ public class PersonController {
 
   /**
    * Recherche toutes les personnes enregistrées dans la base de données.
+   *
+   * @return List<PersonDTO> contenant toutes les personnes enregistrées
    */
   @GetMapping("/persons")
   public List<PersonDTO> getAllPersons() {
@@ -42,47 +51,49 @@ public class PersonController {
 
   /**
    * Ajoute une nouvelle personne via un corps de requête JSON.
-   * Le prénom et le nom de famille sont obligatoires.
+   *
+   * @param personDTO les informations de la personne à créer
+   * @return ResponseEntity avec le statut HTTP approprié (201 si créé, 409 si existe déjà)
    */
   @PostMapping("/person")
-  public ResponseEntity<String> postPerson(@RequestBody @Valid PersonDTO personDTO) {
+  public ResponseEntity<String> createNewPerson(@RequestBody @Valid PersonDTO personDTO) {
     boolean saved = personService.saveNewPerson(personDTO);
     if (saved) {
-      personService.saveNewPerson(personDTO);
       return ResponseEntity.status(HttpStatus.CREATED).body("New person created");
     } else {
-      return ResponseEntity.status(HttpStatus.CONFLICT).body("Creat person failed");
+      return ResponseEntity.status(HttpStatus.CONFLICT).body("Create person failed");
     }
-
   }
 
   /**
-   * Met à jour les informations d'une personne existante dans la base de données via un corps JSON.
+   * Met à jour les informations d'une personne existante dans la base de données.
+   *
+   * @param personDTO les nouvelles informations de la personne
+   * @return ResponseEntity avec le statut HTTP approprié (200 si mis à jour, 409 si échec)
    */
   @PutMapping("/person")
-  public ResponseEntity<String> putPerson(@RequestBody @Valid PersonDTO personDTO) {
+  public ResponseEntity<String> updatePerson(@RequestBody @Valid PersonDTO personDTO) {
     boolean updated = personService.updatePerson(personDTO);
-    if(updated) {
-    personService.updatePerson(personDTO);
-    return ResponseEntity.ok("Person updated");
+    if (updated) {
+      return ResponseEntity.ok("Person updated");
     } else {
       return ResponseEntity.status(HttpStatus.CONFLICT).body("Update person failed");
     }
   }
 
   /**
-   * Supprime une personne existante dans la base de donnée via un corps de requête JSON.
-   * Le prénom et le nom de famille sont obligatoires.
+   * Supprime une personne existante dans la base de données.
+   *
+   * @param personDTO les informations de la personne à supprimer
+   * @return ResponseEntity avec le statut HTTP approprié (200 si supprimé, 409 si échec)
    */
   @DeleteMapping("/person")
   public ResponseEntity<String> deletePerson(@RequestBody @Valid PersonDTO personDTO) {
     boolean deleted = personService.deletePerson(personDTO);
-    if(deleted) {
-    personService.deletePerson(personDTO);
-    return ResponseEntity.ok("Person deleted");
+    if (deleted) {
+      return ResponseEntity.ok("Person deleted");
     } else {
       return ResponseEntity.status(HttpStatus.CONFLICT).body("Delete person failed");
     }
   }
-
 }

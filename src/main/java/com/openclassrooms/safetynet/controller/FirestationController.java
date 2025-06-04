@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Contrôleur REST pour la gestion des casernes de pompiers.
+ * Fournit des endpoints pour les opérations CRUD sur les casernes et la récupération des informations de couverture.
+ */
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -24,6 +28,8 @@ public class FirestationController {
 
   /**
    * Récupère la liste de toutes les casernes enregistrées.
+   *
+   * @return List<Firestation> la liste de toutes les casernes
    */
   @GetMapping("/firestations")
   public List<Firestation> getAllFirestations() {
@@ -33,6 +39,9 @@ public class FirestationController {
 
   /**
    * Récupère la liste des personnes couvertes par un numéro de caserne donné.
+   *
+   * @param stationNumber le numéro de la caserne
+   * @return FirestationResponseDTO contenant la liste des personnes et les statistiques démographiques
    */
   @GetMapping("/firestation")
   public FirestationResponseDTO getListOfPeopleByStationNumber(@RequestParam int stationNumber) {
@@ -42,6 +51,10 @@ public class FirestationController {
 
   /**
    * Ajoute une nouvelle caserne avec une adresse et un numéro de station.
+   *
+   * @param address l'adresse de la nouvelle caserne
+   * @param stationNumber le numéro de la station
+   * @return ResponseEntity<String> avec le statut HTTP approprié (201 si créé, 409 si existe déjà)
    */
   @PostMapping("/firestation")
   public ResponseEntity<String> postFirestationMapping(@RequestParam String address, @RequestParam int stationNumber) {
@@ -58,7 +71,11 @@ public class FirestationController {
   }
 
   /**
-   * Met à jour une caserne existante à partir de son adresse et d’un nouveau numéro de station.
+   * Met à jour une caserne existante à partir de son adresse et d'un nouveau numéro de station.
+   *
+   * @param address l'adresse de la caserne à mettre à jour
+   * @param stationNumber le nouveau numéro de station
+   * @return ResponseEntity<String> avec le statut HTTP approprié (200 si mis à jour, 404 si non trouvé)
    */
   @PutMapping("/firestation")
   public ResponseEntity<String> updateFirestation(@RequestParam String address, @RequestParam int stationNumber) {
@@ -76,6 +93,11 @@ public class FirestationController {
 
   /**
    * Supprime une caserne à partir de son adresse ou de son numéro de station.
+   *
+   * @param address l'adresse de la caserne à supprimer (optionnel)
+   * @param stationNumber le numéro de station à supprimer (optionnel)
+   * @return ResponseEntity<String> avec le statut HTTP approprié
+   * @throws IllegalArgumentException si ni l'adresse ni le numéro de station ne sont fournis
    */
   @DeleteMapping("/firestation")
   public ResponseEntity<String> deleteFirestation(@RequestParam(required = false) String address, @RequestParam(required = false) Integer stationNumber) {
@@ -102,7 +124,7 @@ public class FirestationController {
         return ResponseEntity.ok().body("Deleted firestation with station number: " + stationNumber);
       } else {
         log.warn("No firestations found with station number {}", stationNumber);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Firestation address not found");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Firestation with this station number not found");
       }
 
     } else {

@@ -1,13 +1,17 @@
 package com.openclassrooms.safetynet.dto;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.logging.log4j.core.config.plugins.validation.constraints.NotBlank;
 
+/**
+ * DTO pour la réponse de l'endpoint /person.
+ */
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class PersonDTO {
     @NotBlank(message = "First name is required")
     private String firstName;
@@ -17,7 +21,6 @@ public class PersonDTO {
     private String address;
     private String city;
     private String zip;
-    @Pattern(regexp = "^(\\+\\d{1,3}[- ]?)?\\d{10}$", message = "Invalid phone number.")
     private String phone;
     @Email(message = "Email should be valid")
     private String email;

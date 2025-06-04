@@ -7,6 +7,9 @@ import com.openclassrooms.safetynet.model.Person;
 import java.util.List;
 import lombok.Data;
 
+/**
+ * Json Data wrapper for the data.json file.
+ */
 @Data
 public class DataWrapper {
     private List<Person> persons;

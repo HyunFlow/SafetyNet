@@ -8,6 +8,9 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service pour la gestion des informations personnelles des personnes.
+ */
 @Service
 @RequiredArgsConstructor
 public class PersonInfoService {
@@ -17,6 +20,10 @@ public class PersonInfoService {
 
   /**
    * Retourne les informations personnelles des personnes dont le nom de famille correspond au paramètre donné.
+   * La recherche est insensible à la casse.
+   *
+   * @param lastName le nom de famille à rechercher
+   * @return List<PersonInfoResponseDTO> contenant les informations des personnes trouvées
    */
   public List<PersonInfoResponseDTO> findPersonsInfoByLastName(String lastName) {
     List<Person> persons = dataRepository.getPersons();

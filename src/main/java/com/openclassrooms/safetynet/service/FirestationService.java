@@ -10,6 +10,11 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service pour la gestion des casernes de pompiers.
+ * Gère les opérations CRUD sur les casernes et fournit des fonctionnalités de recherche
+ * pour les personnes couvertes par chaque caserne.
+ */
 @Service
 @RequiredArgsConstructor
 public class FirestationService {
@@ -18,6 +23,10 @@ public class FirestationService {
 
   /**
    * Recherche la liste des personnes couvertes par une caserne donnée.
+   * Calcule également le nombre d'adultes et d'enfants dans la zone.
+   *
+   * @param stationNumber le numéro de la caserne
+   * @return FirestationResponseDTO contenant la liste des personnes et les statistiques démographiques
    */
   public FirestationResponseDTO getPeopleByStation(int stationNumber) {
     List<Person> persons = dataRepository.getPersons();
@@ -40,6 +49,11 @@ public class FirestationService {
 
   /**
    * Ajoute une nouvelle caserne avec une adresse et un numéro de station.
+   * Vérifie si l'adresse n'existe pas déjà avant l'ajout.
+   *
+   * @param address l'adresse de la nouvelle caserne
+   * @param stationNumber le numéro de la station
+   * @return true si l'ajout est réussi, false si l'adresse existe déjà
    */
   public boolean addFirestation(String address, int stationNumber) {
     List<Firestation> firestations = dataRepository.getFirestations();
@@ -55,13 +69,18 @@ public class FirestationService {
   }
 
   /**
-   * Met à jour le numéro de station d’une caserne existante à une adresse donnée.
+   * Met à jour le numéro de station d'une caserne existante à une adresse donnée.
+   * Vérifie si l'adresse existe avant la mise à jour.
+   *
+   * @param address l'adresse de la caserne à mettre à jour
+   * @param stationNumber le nouveau numéro de station
+   * @return true si la mise à jour est réussie, false si l'adresse n'existe pas
    */
   public boolean setFirestation(String address, int stationNumber) {
     List<Firestation> firestations = dataRepository.getFirestations();
 
     if (firestations.stream().anyMatch(f -> f.getAddress().equalsIgnoreCase(address))) {
-      dataRepository.updateFirestation(new Firestation(address, stationNumber));
+      dataRepository.setFirestation(new Firestation(address, stationNumber));
       return true;
     } else {
       return false;
@@ -70,6 +89,10 @@ public class FirestationService {
 
   /**
    * Supprime une caserne en fonction de son adresse.
+   * Vérifie si l'adresse existe avant la suppression.
+   *
+   * @param address l'adresse de la caserne à supprimer
+   * @return true si la suppression est réussie, false si l'adresse n'existe pas
    */
   public boolean deleteFirestationByAddress(String address) {
     List<Firestation> firestations = dataRepository.getFirestations();
@@ -84,6 +107,10 @@ public class FirestationService {
 
   /**
    * Supprime toutes les casernes associées à un numéro de station donné.
+   * Vérifie si le numéro de station existe avant la suppression.
+   *
+   * @param stationNumber le numéro de station à supprimer
+   * @return true si la suppression est réussie, false si le numéro n'existe pas
    */
   public boolean deleteFirestationByStation(int stationNumber) {
     List<Firestation> firestations = dataRepository.getFirestations();
@@ -98,6 +125,9 @@ public class FirestationService {
 
   /**
    * Recherche et retourne le numéro de station associé à une adresse donnée.
+   *
+   * @param address l'adresse à rechercher
+   * @return le numéro de station, ou -1 si l'adresse n'est pas trouvée
    */
   public int getStationNumberByAddress(String address) {
     int stationNumber = dataRepository.getAllFirestations().stream()
@@ -110,6 +140,8 @@ public class FirestationService {
 
   /**
    * Retourne la liste de toutes les casernes enregistrées.
+   *
+   * @return List<Firestation> contenant toutes les casernes
    */
   public List<Firestation> getAllFirestations() {
     return dataRepository.getAllFirestations();

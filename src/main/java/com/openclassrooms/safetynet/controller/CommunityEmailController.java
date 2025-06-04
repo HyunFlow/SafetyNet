@@ -9,18 +9,25 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Contrôleur REST pour la gestion des emails communautaires.
+ * Fournit des endpoints pour récupérer les adresses email des résidents d'une ville.
+ */
 @RestController
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public class CommunityEmailController {
 
   private final CommunityEmailService communityEmailService;
 
   /**
-   * Récupère la liste des emails associés à une ville donnée
+   * Récupère toutes les adresses email des habitants d'une ville donnée.
+   *
+   * @param city le nom de la ville
+   * @return List<CommunityEmailDTO> contenant la liste des adresses email des habitants
    */
   @GetMapping("/communityEmail")
-  public List<CommunityEmailDTO> getCommunityEmail(@RequestParam String city) {
+  public List<CommunityEmailDTO> findCommunityEmail(@RequestParam String city) {
     log.info("Retrieving community email for city {}", city);
     return communityEmailService.findEmailByCity(city);
   }

@@ -9,21 +9,26 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Contrôleur REST pour la gestion des alertes d'inondation.
+ * Fournit des endpoints pour obtenir des informations sur les foyers desservis par les casernes en cas d'inondation.
+ */
 @RestController
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public class FloodController {
+
   private final FloodService floodService;
 
   /**
-   * Récupère les foyers desservis par une ou plusieurs casernes.
+   * Récupère la liste des foyers desservis par les casernes spécifiées.
    *
-   * @param stationNumbers Liste des numéros de casernes à interroger.
-   * @return Une liste d’objets {@link FloodResponseDTO} contenant les adresses et leurs résidents.
+   * @param stations la liste des numéros de caserne
+   * @return List<FloodResponseDTO> contenant les informations des foyers par caserne
    */
   @GetMapping("/flood/stations")
-  public List<FloodResponseDTO> getHouseholdsByStations(@RequestParam List<Integer>stationNumbers) {
-    log.info("Retrieving flood station numbers for {}", stationNumbers);
-    return floodService.findHouseholdsByStationNumbers(stationNumbers);
+  public List<FloodResponseDTO> getFloodStations(@RequestParam List<Integer> stations) {
+    log.info("Retrieving flood information for stations {}", stations);
+    return floodService.findHouseholdsByStationNumbers(stations);
   }
 }

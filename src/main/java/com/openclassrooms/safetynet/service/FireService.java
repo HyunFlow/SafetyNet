@@ -8,6 +8,11 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service pour la gestion des informations en cas d'incendie.
+ * Fournit des fonctionnalités pour récupérer les informations des résidents
+ * et de leur caserne de pompiers en cas d'incendie à une adresse donnée.
+ */
 @Service
 @RequiredArgsConstructor
 public class FireService {
@@ -19,6 +24,11 @@ public class FireService {
   /**
    * Retourne les informations sur les habitants à une adresse spécifique,
    * ainsi que le numéro de la caserne de pompiers qui couvre cette adresse.
+   * Pour chaque résident, inclut le prénom, nom, numéro de téléphone,
+   * âge, médicaments et allergies.
+   *
+   * @param address l'adresse à rechercher
+   * @return FireResponseDTO contenant le numéro de la caserne et la liste des résidents
    */
   public FireResponseDTO findResidentsByAddress(String address) {
     int stationNumber = firestationService.getStationNumberByAddress(address);
