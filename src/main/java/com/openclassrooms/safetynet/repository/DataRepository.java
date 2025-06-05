@@ -1,13 +1,16 @@
 package com.openclassrooms.safetynet.repository;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.openclassrooms.safetynet.dto.DataWrapper;
 import com.openclassrooms.safetynet.model.Firestation;
 import com.openclassrooms.safetynet.model.MedicalRecord;
 import com.openclassrooms.safetynet.model.Person;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Writer;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -53,12 +56,32 @@ public class DataRepository {
   }
 
   /**
+   * Sauvegarde les données actuelles dans le fichier JSON.
+   */
+  private void saveData() {
+    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    DataWrapper data = new DataWrapper();
+    data.setPersons(this.persons);
+    data.setFirestations(this.firestations);
+    data.setMedicalRecords(this.medicalRecords);
+
+    try (Writer writer = new FileWriter(filePath)) {
+      gson.toJson(data, writer);
+      log.info("Data saved successfully to file");
+    } catch (IOException e) {
+      e.printStackTrace();
+      log.error("Error saving data", e);
+    }
+  }
+
+  /**
    * Ajoute une caserne de pompiers à la liste.
    *
    * @param firestation la caserne de pompiers à ajouter
    */
   public void addFirestation(Firestation firestation) {
     this.firestations.add(firestation);
+    saveData();
   }
 
   /**
@@ -70,6 +93,8 @@ public class DataRepository {
     for (int i = 0; i < firestations.size(); i++) {
       if (this.firestations.get(i).getAddress().equalsIgnoreCase(firestation.getAddress())) {
         this.firestations.set(i, firestation);
+        saveData();
+        break;
       }
     }
   }
@@ -80,7 +105,10 @@ public class DataRepository {
    * @param address l'adresse de la caserne à supprimer
    */
   public void deleteFirestationByAddress(String address) {
-    firestations.removeIf(f -> f.getAddress().equalsIgnoreCase(address));
+    boolean removed = firestations.removeIf(f -> f.getAddress().equalsIgnoreCase(address));
+    if (removed) {
+      saveData();
+    }
   }
 
   /**
@@ -89,7 +117,10 @@ public class DataRepository {
    * @param stationNumber le numéro de station de la caserne à supprimer
    */
   public void deleteFirestationByStation(int stationNumber) {
-    firestations.removeIf(f -> f.getStation() == stationNumber);
+    boolean removed = firestations.removeIf(f -> f.getStation() == stationNumber);
+    if (removed) {
+      saveData();
+    }
   }
 
   /**
@@ -108,7 +139,11 @@ public class DataRepository {
    * @return true si l'ajout est réussi, false sinon
    */
   public boolean addPerson(Person newPerson) {
-    return this.persons.add(newPerson);
+    boolean added = this.persons.add(newPerson);
+    if (added) {
+      saveData();
+    }
+    return added;
   }
 
   /**
@@ -123,6 +158,7 @@ public class DataRepository {
       if (existingPerson.getFirstName().equalsIgnoreCase(updatedPerson.getFirstName())
           && existingPerson.getLastName().equalsIgnoreCase(updatedPerson.getLastName())) {
         this.persons.set(i, updatedPerson);
+        saveData();
         return true;
       }
     }
@@ -136,8 +172,12 @@ public class DataRepository {
    * @return true si la suppression est réussie, false sinon
    */
   public boolean deletePerson(Person existPerson) {
-    return this.persons.removeIf(p -> p.getFirstName().equalsIgnoreCase(existPerson.getFirstName())
+    boolean removed = this.persons.removeIf(p -> p.getFirstName().equalsIgnoreCase(existPerson.getFirstName())
         && p.getLastName().equalsIgnoreCase(existPerson.getLastName()));
+    if (removed) {
+      saveData();
+    }
+    return removed;
   }
 
   /**
@@ -147,7 +187,11 @@ public class DataRepository {
    * @return true si l'ajout est réussi, false sinon
    */
   public boolean addMedicalRecord(MedicalRecord newMedicalRecord) {
-    return this.medicalRecords.add(newMedicalRecord);
+    boolean added = this.medicalRecords.add(newMedicalRecord);
+    if (added) {
+      saveData();
+    }
+    return added;
   }
 
   /**
@@ -162,6 +206,7 @@ public class DataRepository {
       if (existingMedicalRecord.getFirstName().equalsIgnoreCase(updatedRecord.getFirstName()) &&
           existingMedicalRecord.getLastName().equalsIgnoreCase(updatedRecord.getLastName())) {
         this.medicalRecords.set(i, updatedRecord);
+        saveData();
         return true;
       }
     }
@@ -175,7 +220,11 @@ public class DataRepository {
    * @return true si la suppression est réussie, false sinon
    */
   public boolean deleteMedicalRecord(MedicalRecord existMedicalRecord) {
-    return this.medicalRecords.removeIf(mr -> mr.getFirstName().equalsIgnoreCase(existMedicalRecord.getFirstName())
+    boolean removed = this.medicalRecords.removeIf(mr -> mr.getFirstName().equalsIgnoreCase(existMedicalRecord.getFirstName())
         && mr.getLastName().equalsIgnoreCase(existMedicalRecord.getLastName()));
+    if (removed) {
+      saveData();
+    }
+    return removed;
   }
 }
