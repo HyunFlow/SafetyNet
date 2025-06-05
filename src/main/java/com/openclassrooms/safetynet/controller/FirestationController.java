@@ -33,8 +33,10 @@ public class FirestationController {
    */
   @GetMapping("/firestations")
   public List<Firestation> getAllFirestations() {
-    log.info("Retrieving all firestations.");
-    return firestationService.getAllFirestations();
+    log.info("GET request received for all firestations");
+    List<Firestation> firestations = firestationService.getAllFirestations();
+    log.info("Response: Found {} firestations", firestations.size());
+    return firestations;
   }
 
   /**
@@ -45,8 +47,11 @@ public class FirestationController {
    */
   @GetMapping("/firestation")
   public FirestationResponseDTO getListOfPeopleByStationNumber(@RequestParam int stationNumber) {
-    log.info("Retrieving people covered by firestation number {}", stationNumber);
-    return firestationService.getPeopleByStation(stationNumber);
+    log.info("GET request received for people covered by station number: {}", stationNumber);
+    FirestationResponseDTO response = firestationService.getPeopleByStation(stationNumber);
+    log.info("Response: Found {} people covered by station {}", 
+        response.getPersons().size(), stationNumber);
+    return response;
   }
 
   /**
@@ -58,14 +63,17 @@ public class FirestationController {
    */
   @PostMapping("/firestation")
   public ResponseEntity<String> postFirestationMapping(@RequestParam String address, @RequestParam int stationNumber) {
+    log.info("POST request received to create firestation: address='{}', station={}", 
+        address, stationNumber);
     boolean added = firestationService.addFirestation(address, stationNumber);
-    log.info("Adding new firestation: address='{}', stationNumber={}", address, stationNumber);
 
     if (added) {
-      log.info("Firestation successfully added.");
+      log.info("Response: Successfully created firestation: address='{}', station={}", 
+          address, stationNumber);
       return ResponseEntity.status(HttpStatus.CREATED).body("Successfully added firestation");
     } else {
-      log.info("Failed to add firestation.");
+      log.error("Response: Failed to create firestation - already exists: address='{}', station={}", 
+          address, stationNumber);
       return ResponseEntity.status(HttpStatus.CONFLICT).body("Mapping already exists");
     }
   }
@@ -79,14 +87,17 @@ public class FirestationController {
    */
   @PutMapping("/firestation")
   public ResponseEntity<String> updateFirestation(@RequestParam String address, @RequestParam int stationNumber) {
+    log.info("PUT request received to update firestation: address='{}', station={}", 
+        address, stationNumber);
     boolean updated = firestationService.setFirestation(address, stationNumber);
-    log.info("Updating firestation: address='{}', stationNumber={}", address, stationNumber);
 
     if (updated) {
-      log.info("Firestation successfully updated.");
+      log.info("Response: Successfully updated firestation: address='{}', station={}", 
+          address, stationNumber);
       return ResponseEntity.status(HttpStatus.OK).body("Successfully updated firestation");
     } else {
-      log.info("Failed to update firestation.");
+      log.error("Response: Failed to update firestation - not found: address='{}', station={}", 
+          address, stationNumber);
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Firestation address not found");
     }
   }
@@ -101,34 +112,35 @@ public class FirestationController {
    */
   @DeleteMapping("/firestation")
   public ResponseEntity<String> deleteFirestation(@RequestParam(required = false) String address, @RequestParam(required = false) Integer stationNumber) {
-    log.info("Delete request received: address='{}', stationNumber={}", address, stationNumber);
+    log.info("DELETE request received with address='{}', station={}", address, stationNumber);
 
     if (address != null) {
-      log.info("Attempting to delete firestation with address '{}'", address);
+      log.info("Processing delete request for firestation by address: '{}'", address);
       boolean deleted = firestationService.deleteFirestationByAddress(address);
 
       if(deleted) {
-        log.info("Firestation successfully deleted.");
+        log.info("Response: Successfully deleted firestation: address='{}'", address);
         return ResponseEntity.ok().body("Deleted firestation with address: " + address);
       } else {
-        log.warn("Firestation with address '{}' not found.", address);
+        log.error("Response: Failed to delete firestation - not found: address='{}'", address);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Firestation address not found");
       }
 
     } else if (stationNumber != null) {
-      log.info("Attempting to delete all firestations with station number {}", stationNumber);
+      log.info("Processing delete request for firestations by station number: {}", stationNumber);
       boolean deleted = firestationService.deleteFirestationByStation(stationNumber);
 
       if(deleted) {
-        log.info("Firestation successfully deleted.");
+        log.info("Response: Successfully deleted firestations with station number: {}", stationNumber);
         return ResponseEntity.ok().body("Deleted firestation with station number: " + stationNumber);
       } else {
-        log.warn("No firestations found with station number {}", stationNumber);
+        log.error("Response: Failed to delete firestations - none found with station number: {}", 
+            stationNumber);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Firestation with this station number not found");
       }
 
     } else {
-      log.warn("Delete request rejected: neither address nor stationNumber was provided");
+      log.error("Response: Failed to delete firestation - no address or station number provided");
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body("Either address or stationNumber must be provided");
     }

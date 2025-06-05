@@ -7,6 +7,7 @@ import com.openclassrooms.safetynet.service.PersonService;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class PersonController {
 
   private final PersonInfoService personInfoService;
@@ -36,7 +38,10 @@ public class PersonController {
    */
   @GetMapping("/personInfolastName")
   public List<PersonInfoResponseDTO> getPersonInfoByLastName(@RequestParam String lastName) {
-    return personInfoService.findPersonsInfoByLastName(lastName);
+    log.info("GET request received for person info with lastName: {}", lastName);
+    List<PersonInfoResponseDTO> result = personInfoService.findPersonsInfoByLastName(lastName);
+    log.info("Response: Found {} person(s) with lastName: {}", result.size(), lastName);
+    return result;
   }
 
   /**
@@ -46,7 +51,10 @@ public class PersonController {
    */
   @GetMapping("/persons")
   public List<PersonDTO> getAllPersons() {
-    return personService.findAllPersons();
+    log.info("GET request received for all persons");
+    List<PersonDTO> persons = personService.findAllPersons();
+    log.info("Response: Found {} persons in total", persons.size());
+    return persons;
   }
 
   /**
@@ -57,10 +65,17 @@ public class PersonController {
    */
   @PostMapping("/person")
   public ResponseEntity<String> createNewPerson(@RequestBody @Valid PersonDTO personDTO) {
+    log.info("POST request received to create person: {} {}", 
+        personDTO.getFirstName(), personDTO.getLastName());
+    
     boolean saved = personService.saveNewPerson(personDTO);
     if (saved) {
+      log.info("Response: Successfully created person: {} {}", 
+          personDTO.getFirstName(), personDTO.getLastName());
       return ResponseEntity.status(HttpStatus.CREATED).body("New person created");
     } else {
+      log.error("Response: Failed to create person - already exists: {} {}", 
+          personDTO.getFirstName(), personDTO.getLastName());
       return ResponseEntity.status(HttpStatus.CONFLICT).body("Create person failed");
     }
   }
@@ -73,26 +88,40 @@ public class PersonController {
    */
   @PutMapping("/person")
   public ResponseEntity<String> updatePerson(@RequestBody @Valid PersonDTO personDTO) {
+    log.info("PUT request received to update person: {} {}", 
+        personDTO.getFirstName(), personDTO.getLastName());
+    
     boolean updated = personService.updatePerson(personDTO);
     if (updated) {
+      log.info("Response: Successfully updated person: {} {}", 
+          personDTO.getFirstName(), personDTO.getLastName());
       return ResponseEntity.ok("Person updated");
     } else {
+      log.error("Response: Failed to update person - not found: {} {}", 
+          personDTO.getFirstName(), personDTO.getLastName());
       return ResponseEntity.status(HttpStatus.CONFLICT).body("Update person failed");
     }
   }
 
   /**
-   * Supprime une personne existante dans la base de données.
+   * Supprime une personne de la base de données.
    *
    * @param personDTO les informations de la personne à supprimer
    * @return ResponseEntity avec le statut HTTP approprié (200 si supprimé, 409 si échec)
    */
   @DeleteMapping("/person")
   public ResponseEntity<String> deletePerson(@RequestBody @Valid PersonDTO personDTO) {
+    log.info("DELETE request received for person: {} {}", 
+        personDTO.getFirstName(), personDTO.getLastName());
+    
     boolean deleted = personService.deletePerson(personDTO);
     if (deleted) {
+      log.info("Response: Successfully deleted person: {} {}", 
+          personDTO.getFirstName(), personDTO.getLastName());
       return ResponseEntity.ok("Person deleted");
     } else {
+      log.error("Response: Failed to delete person - not found: {} {}", 
+          personDTO.getFirstName(), personDTO.getLastName());
       return ResponseEntity.status(HttpStatus.CONFLICT).body("Delete person failed");
     }
   }

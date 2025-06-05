@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FloodService {
 
   private final DataRepository dataRepository;
@@ -39,7 +41,6 @@ public class FloodService {
    * @return List<FloodResponseDTO> contenant les informations des foyers par caserne
    */
   public List<FloodResponseDTO> findHouseholdsByStationNumbers(List<Integer> stationNumbers) {
-
     Map<String, Integer> addressStationMap = dataRepository.getFirestations().stream()
         .filter(f -> stationNumbers.contains(f.getStation()))
         .collect(Collectors.toMap(
@@ -48,9 +49,11 @@ public class FloodService {
             (existing, replacement) -> existing
         ));
 
+    log.debug("Found {} addresses covered by stations: {}", addressStationMap.size(), stationNumbers);
+
     List<String> addresses = new ArrayList<>(addressStationMap.keySet());
 
-    return addresses.stream()
+    List<FloodResponseDTO> response = addresses.stream()
         .map(address -> {
           List<ResidentDTO> residents = dataRepository.getPersons().stream()
               .filter(p -> p.getAddress().equalsIgnoreCase(address))
@@ -65,9 +68,14 @@ public class FloodService {
               ).collect(Collectors.toList());
 
           int stationNumber = addressStationMap.get(address);
+          log.debug("Found {} residents at address: '{}' (station {})", 
+              residents.size(), address, stationNumber);
 
           return new FloodResponseDTO(stationNumber, address, residents);
         })
         .collect(Collectors.toList());
+
+    log.debug("Processed {} total households for flood alert", response.size());
+    return response;
   }
 }

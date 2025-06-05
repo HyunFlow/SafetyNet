@@ -30,7 +30,11 @@ public class AlertController {
    */
   @GetMapping("/childAlert")
   public ChildAlertResponseDTO getChildAlertByAddress(@RequestParam String address) {
-    return childAlertService.findChildrenAndFamilyByAddress(address);
+    log.info("GET request received for child alert at address: '{}'", address);
+    ChildAlertResponseDTO response = childAlertService.findChildrenAndFamilyByAddress(address);
+    log.info("Response: Found {} children and {} family members at address: '{}'", 
+        response.getChildren().size(), response.getFamily().size(), address);
+    return response;
   }
 
   /**
@@ -41,6 +45,10 @@ public class AlertController {
    */
   @GetMapping("/phoneAlert")
   public PhoneAlertResponseDTO getListOfPhoneNumberByAddress(@RequestParam int stationNumber) {
-    return phoneAlertService.findPhoneNumberOfPeopleByFirestation(stationNumber);
+    log.info("GET request received for phone numbers covered by station: {}", stationNumber);
+    PhoneAlertResponseDTO response = phoneAlertService.findPhoneNumberOfPeopleByFirestation(stationNumber);
+    log.info("Response: Found {} phone numbers for station: {}", 
+        response.getPhoneNumber().size(), stationNumber);
+    return response;
   }
 }

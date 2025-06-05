@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FirestationService {
 
   private final DataRepository dataRepository;
@@ -36,6 +38,8 @@ public class FirestationService {
         .filter(f -> f.getStation() == stationNumber)
         .map(Firestation::getAddress)
         .collect(Collectors.toSet());
+
+    log.debug("Found {} addresses covered by station {}", addresses.size(), stationNumber);
 
     List<Person> peopleCoveredByStation = persons.stream()
         .filter(p -> addresses.contains(p.getAddress()))
@@ -60,10 +64,12 @@ public class FirestationService {
 
     if (firestations.stream()
         .anyMatch(f -> f.getAddress().equalsIgnoreCase(address))) {
+      log.debug("Failed to add firestation - address already exists: '{}'", address);
       return false;
     } else {
       Firestation newFirestation = new Firestation(address, stationNumber);
       dataRepository.addFirestation(newFirestation);
+      log.debug("Successfully added new firestation: address='{}', station={}", address, stationNumber);
       return true;
     }
   }
@@ -81,8 +87,10 @@ public class FirestationService {
 
     if (firestations.stream().anyMatch(f -> f.getAddress().equalsIgnoreCase(address))) {
       dataRepository.setFirestation(new Firestation(address, stationNumber));
+      log.debug("Successfully updated firestation: address='{}', new station={}", address, stationNumber);
       return true;
     } else {
+      log.debug("Failed to update firestation - address not found: '{}'", address);
       return false;
     }
   }
@@ -99,8 +107,10 @@ public class FirestationService {
     if (firestations.stream()
         .anyMatch(f -> f.getAddress().equalsIgnoreCase(address))) {
       dataRepository.deleteFirestationByAddress(address);
+      log.debug("Successfully deleted firestation by address: '{}'", address);
       return true;
     } else {
+      log.debug("Failed to delete firestation - address not found: '{}'", address);
       return false;
     }
   }
@@ -117,8 +127,10 @@ public class FirestationService {
     if (firestations.stream()
         .anyMatch(f -> f.getStation() == stationNumber)) {
       dataRepository.deleteFirestationByStation(stationNumber);
+      log.debug("Successfully deleted firestations with station number: {}", stationNumber);
       return true;
     } else {
+      log.debug("Failed to delete firestations - station number not found: {}", stationNumber);
       return false;
     }
   }
@@ -135,6 +147,13 @@ public class FirestationService {
         .map(Firestation::getStation)
         .findFirst()
         .orElse(-1);
+    
+    if (stationNumber != -1) {
+      log.debug("Found station number {} for address: '{}'", stationNumber, address);
+    } else {
+      log.debug("No station found for address: '{}'", address);
+    }
+    
     return stationNumber;
   }
 
@@ -144,6 +163,8 @@ public class FirestationService {
    * @return List<Firestation> contenant toutes les casernes
    */
   public List<Firestation> getAllFirestations() {
-    return dataRepository.getAllFirestations();
+    List<Firestation> firestations = dataRepository.getAllFirestations();
+    log.debug("Retrieved {} total firestations", firestations.size());
+    return firestations;
   }
 }

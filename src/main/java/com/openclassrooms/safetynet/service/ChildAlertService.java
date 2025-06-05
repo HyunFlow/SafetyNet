@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,9 +15,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ChildAlertService {
 
-  
   private final DataRepository dataRepository;
 
   /**
@@ -33,13 +34,19 @@ public class ChildAlertService {
         .filter(p -> p.getAddress().equalsIgnoreCase(address) && p.getAge() <= 18)
         .collect(Collectors.toList());
 
+    log.debug("Found {} children at address: '{}'", childrenByAddress.size(), address);
+
     Set<String> lastNamesOfChildren = childrenByAddress.stream()
         .map(Person::getLastName)
         .collect(Collectors.toSet());
 
+    log.debug("Found {} unique family names among children", lastNamesOfChildren.size());
+
     List<Person> familyMembers = persons.stream()
         .filter(p -> p.getAddress().equalsIgnoreCase(address) && lastNamesOfChildren.contains(p.getLastName()) && p.getAge() > 18)
-                .collect(Collectors.toList());
+        .collect(Collectors.toList());
+
+    log.debug("Found {} adult family members at address: '{}'", familyMembers.size(), address);
 
     return new ChildAlertResponseDTO(childrenByAddress, familyMembers);
   }

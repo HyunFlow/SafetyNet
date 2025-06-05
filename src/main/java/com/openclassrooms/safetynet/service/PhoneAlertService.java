@@ -5,6 +5,7 @@ import com.openclassrooms.safetynet.model.Person;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PhoneAlertService {
   private final FirestationService firestationService;
 
@@ -23,10 +25,14 @@ public class PhoneAlertService {
    */
   public PhoneAlertResponseDTO findPhoneNumberOfPeopleByFirestation(int stationNumber) {
     List<Person> persons = firestationService.getPeopleByStation(stationNumber).getPersons();
+    log.debug("Retrieved {} people covered by station {}", persons.size(), stationNumber);
+
     List<String> phoneNumber = persons.stream()
         .map(Person::getPhone)
         .distinct()
         .collect(Collectors.toList());
+
+    log.debug("Found {} unique phone numbers for station {}", phoneNumber.size(), stationNumber);
 
     return new PhoneAlertResponseDTO(phoneNumber);
   }

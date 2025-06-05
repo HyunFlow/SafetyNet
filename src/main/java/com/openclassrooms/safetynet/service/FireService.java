@@ -6,6 +6,7 @@ import com.openclassrooms.safetynet.repository.DataRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FireService {
 
   private final DataRepository dataRepository;
@@ -32,6 +34,7 @@ public class FireService {
    */
   public FireResponseDTO findResidentsByAddress(String address) {
     int stationNumber = firestationService.getStationNumberByAddress(address);
+    log.debug("Found station {} for address: '{}'", stationNumber, address);
 
     List<ResidentDTO> residents = dataRepository.getPersons().stream()
         .filter(p -> p.getAddress().equalsIgnoreCase(address))
@@ -44,6 +47,8 @@ public class FireService {
                 medicalRecordService.findAllergiesByName(p.getFirstName(), p.getLastName())
             )
         ).collect(Collectors.toList());
+
+    log.debug("Found {} residents at address: '{}'", residents.size(), address);
 
     return new FireResponseDTO(stationNumber, residents);
   }

@@ -31,7 +31,7 @@ public class MedicalRecordService {
    */
   public List<MedicalRecordResponseDTO> findMedicalRecordsByName(String firstName,
       String lastName) {
-    return dataRepository.getMedicalRecords().stream()
+    List<MedicalRecordResponseDTO> records = dataRepository.getMedicalRecords().stream()
         .filter(mr -> mr.getFirstName().equalsIgnoreCase(firstName) && mr.getLastName()
             .equalsIgnoreCase(lastName))
         .map(mr -> new MedicalRecordResponseDTO(
@@ -42,6 +42,9 @@ public class MedicalRecordService {
             mr.getAllergies()
         ))
         .collect(Collectors.toList());
+
+    log.debug("Found {} medical records for person: '{}' '{}'", records.size(), firstName, lastName);
+    return records;
   }
 
   /**
@@ -53,11 +56,14 @@ public class MedicalRecordService {
    * @return Une liste de médicaments prescrits
    */
   public List<String> findMedicationsByName(String firstName, String lastName) {
-    return dataRepository.getMedicalRecords().stream()
+    List<String> medications = dataRepository.getMedicalRecords().stream()
         .filter(r -> r.getFirstName().equalsIgnoreCase(firstName) && r.getLastName()
             .equalsIgnoreCase(lastName))
         .flatMap(r -> r.getMedications().stream())
         .collect(Collectors.toList());
+
+    log.debug("Found {} medications for person: '{}' '{}'", medications.size(), firstName, lastName);
+    return medications;
   }
 
   /**
@@ -66,14 +72,17 @@ public class MedicalRecordService {
    *
    * @param firstName Le prénom de la personne
    * @param lastName  Le nom de famille de la personne
-   * @return Une liste d’allergies connues
+   * @return Une liste d'allergies connues
    */
   public List<String> findAllergiesByName(String firstName, String lastName) {
-    return dataRepository.getMedicalRecords().stream()
+    List<String> allergies = dataRepository.getMedicalRecords().stream()
         .filter(r -> r.getFirstName().equalsIgnoreCase(firstName) && r.getLastName()
             .equalsIgnoreCase(lastName))
         .flatMap(r -> r.getAllergies().stream())
         .collect(Collectors.toList());
+
+    log.debug("Found {} allergies for person: '{}' '{}'", allergies.size(), firstName, lastName);
+    return allergies;
   }
 
   /**
@@ -82,7 +91,7 @@ public class MedicalRecordService {
    * @return Une liste de tous les dossiers médicaux disponibles
    */
   public List<MedicalRecordResponseDTO> findAllMedicalRecords() {
-    return dataRepository.getMedicalRecords().stream()
+    List<MedicalRecordResponseDTO> records = dataRepository.getMedicalRecords().stream()
         .map(mr -> new MedicalRecordResponseDTO(
             mr.getFirstName(),
             mr.getLastName(),
@@ -91,6 +100,9 @@ public class MedicalRecordService {
             mr.getAllergies()
         ))
         .collect(Collectors.toList());
+
+    log.debug("Retrieved {} total medical records", records.size());
+    return records;
   }
 
   /**
